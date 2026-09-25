@@ -89,7 +89,12 @@
 <div class="checkmark">✓</div><h1>Inscription complétée</h1>
 <p>Votre signature a été enregistrée avec succès.</p>
 <p>Merci et bonne grimpe à La Grange !</p>
-<button class="primary" id="restart">TERMINER</button>
+<div class="actions final-actions">
+  <button class="primary" id="newEntry">NOUVELLE INSCRIPTION</button>
+  <button class="secondary" id="closePage">FERMER</button>
+</div>
+
+<p id="closeMessage" class="muted"></p>
 </div></section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
