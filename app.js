@@ -227,6 +227,15 @@ async function enregistrerInscription() {
   }
 }
 
-document.getElementById("restart").addEventListener("click", () => {
+document.getElementById("newEntry").addEventListener("click", () => {
   window.location.reload();
+});
+
+document.getElementById("closePage").addEventListener("click", () => {
+  window.close();
+
+  setTimeout(() => {
+    document.getElementById("closeMessage").textContent =
+      "Vous pouvez maintenant fermer cet onglet.";
+  }, 300);
 });
