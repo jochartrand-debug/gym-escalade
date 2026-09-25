@@ -1,3 +1,5 @@
+const SUPABASE_URL = "https://kisycpyatanclcaytnav.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_mvGAnjexhythAXvbL9PoLg_BzJHwSyK";
 const screens=[...document.querySelectorAll('.screen')];let step=1,drawing=false,hasSignature=false;const canvas=document.getElementById('signaturePad'),ctx=canvas.getContext('2d');
 function showStep(n){step=n;screens.forEach(s=>s.classList.toggle('active',+s.dataset.step===n));document.getElementById('progressText').textContent=`${n} / 6`;if(n===4)resizeCanvas();window.scrollTo(0,0)}
 function clearErrors(){document.querySelectorAll('.error').forEach(e=>e.textContent='')}
