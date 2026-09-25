@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<title>Gym d'escalade privé</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="app">
+<header class="header">
+<div class="brand">GYM D’ESCALADE PRIVÉ</div>
+<div class="progress"><span id="progressText">1 / 6</span></div>
+</header>
+
+<section class="screen active" data-step="1"><div class="card hero">
+<h1>Bienvenue</h1>
+<p>Avant d’utiliser l’installation, vous devez prendre connaissance des règles d’utilisation et des risques associés à la pratique de l’escalade.</p>
+<button class="primary" data-next>COMMENCER</button>
+</div></section>
+
+<section class="screen" data-step="2"><div class="card">
+<h1>Vos renseignements</h1>
+<p class="muted">Les champs marqués d’un * sont obligatoires.</p>
+<label>Prénom *<input id="prenom" autocomplete="given-name" required></label>
+<label>Nom *<input id="nom" autocomplete="family-name" required></label>
+<label>Courriel <span class="optional">(facultatif)</span><input id="courriel" type="email" autocomplete="email"></label>
+<label>Téléphone <span class="optional">(facultatif)</span><input id="telephone" type="tel" autocomplete="tel"></label>
+<div class="error" id="identityError"></div>
+<div class="actions"><button class="secondary" data-prev>RETOUR</button><button class="primary" data-next>CONTINUER</button></div>
+</div></section>
+
+<section class="screen" data-step="3"><div class="card">
+<h1>Règles et risques</h1>
+<div class="scrollbox">
+<h2>1. Règles d’utilisation</h2>
+<ul>
+<li>L’installation est située dans une propriété privée et son utilisation est offerte gratuitement.</li>
+<li>L’utilisation du gym se fait sous la responsabilité de chaque utilisateur.</li>
+<li>Vous devez utiliser l’installation et l’équipement de façon prudente et appropriée.</li>
+<li>Vous devez respecter vos limites et ne pas entreprendre une activité pour laquelle vous ne possédez pas les connaissances ou l’expérience nécessaires.</li>
+<li>Avant chaque utilisation, vous devez vérifier l’état apparent du matériel que vous utilisez.</li>
+<li>Vous ne devez pas utiliser un équipement qui semble endommagé, défectueux ou inadéquat.</li>
+<li>Toute situation dangereuse, tout bris ou tout incident doit être signalé au propriétaire.</li>
+<li>Le propriétaire peut interrompre l’utilisation de l’installation ou en limiter l’accès lorsqu’il le juge nécessaire.</li>
+</ul>
+<h2>2. Reconnaissance des risques</h2>
+<p>La pratique de l’escalade comporte des risques, notamment :</p>
+<ul>
+<li>chute d’une hauteur;</li><li>blessures causées par une chute ou une mauvaise réception;</li>
+<li>blessures liées à l’utilisation de la corde, du harnais ou du matériel d’assurage;</li>
+<li>chute d’objets;</li><li>blessures causées par la structure ou l’équipement;</li>
+<li>erreur humaine ou mauvaise utilisation du matériel;</li><li>blessures graves ou décès.</li>
+</ul>
+<p>Je comprends que ces risques existent même lorsque les règles de sécurité sont respectées et que le matériel est utilisé correctement.</p>
+<h2>3. Déclaration de l’utilisateur</h2>
+<ul>
+<li>avoir lu les présentes règles;</li>
+<li>avoir pris connaissance des risques associés à l’utilisation du gym;</li>
+<li>comprendre que je suis responsable de mes propres décisions et de l’utilisation que je fais de l’installation;</li>
+<li>m’engager à respecter les règles d’utilisation;</li>
+<li>m’engager à ne pas utiliser l’installation si je ne possède pas les connaissances ou les compétences nécessaires pour l’activité que je souhaite pratiquer;</li>
+<li>m’engager à signaler toute situation dangereuse, tout bris ou tout incident.</li>
+</ul>
+</div>
+<label class="check"><input id="regles" type="checkbox"><span>J’ai lu et compris les règles d’utilisation et les risques associés à la pratique de l’escalade.</span></label>
+<label class="check"><input id="risques" type="checkbox"><span>Je confirme que les renseignements fournis dans ce formulaire sont exacts.</span></label>
+<div class="error" id="rulesError"></div>
+<div class="actions"><button class="secondary" data-prev>RETOUR</button><button class="primary" data-next>CONTINUER</button></div>
+</div></section>
+
+<section class="screen" data-step="4"><div class="card">
+<h1>Signature</h1><p>Signez avec votre doigt dans la zone ci-dessous.</p>
+<canvas id="signaturePad"></canvas>
+<div class="error" id="signatureError"></div>
+<div class="actions"><button class="secondary" id="clearSignature">EFFACER</button><button class="secondary" data-prev>RETOUR</button><button class="primary" data-next>CONTINUER</button></div>
+</div></section>
+
+<section class="screen" data-step="5"><div class="card">
+<h1>Confirmation</h1>
+<p>En signant, je confirme avoir pris connaissance des informations présentées dans ce formulaire et accepter les règles d’utilisation du gym.</p>
+<label class="check"><input id="finalAccept" type="checkbox"><span>Je confirme mon inscription et ma signature.</span></label>
+<div class="error" id="finalError"></div>
+<div class="actions"><button class="secondary" data-prev>RETOUR</button><button class="primary" data-next>SIGNER ET TERMINER</button></div>
+</div></section>
+
+<section class="screen" data-step="6"><div class="card success">
+<div class="checkmark">✓</div><h1>Inscription complétée</h1>
+<p>Version de démonstration : aucune donnée n’a encore été envoyée à Supabase.</p>
+<p>La connexion sécurisée à la base de données sera ajoutée à l’étape suivante.</p>
+<button class="primary" id="restart">TERMINER</button>
+</div></section>
+</main>
+<script src="app.js"></script>
+</body></html>
