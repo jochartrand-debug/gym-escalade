@@ -232,10 +232,14 @@ document.getElementById("newEntry").addEventListener("click", () => {
 });
 
 document.getElementById("closePage").addEventListener("click", () => {
-  window.close();
-
-  setTimeout(() => {
-    document.getElementById("closeMessage").textContent =
-      "Vous pouvez maintenant fermer cet onglet.";
-  }, 300);
+  document.body.innerHTML = `
+    <main class="app">
+      <div class="card success">
+        <div class="checkmark">✓</div>
+        <h1>Merci !</h1>
+        <p>Votre inscription à La Grange est terminée.</p>
+        <p>Vous pouvez maintenant fermer cette page.</p>
+      </div>
+    </main>
+  `;
 });
