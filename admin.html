@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La Grange — Administration</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<main class="app">
+
+  <div class="card">
+
+    <h1>La Grange</h1>
+    <h2>Administration du registre</h2>
+
+    <div id="connexion">
+
+      <label>
+        Courriel
+        <input
+          id="adminEmail"
+          type="email"
+          autocomplete="username">
+      </label>
+
+      <label>
+        Mot de passe
+        <input
+          id="adminPassword"
+          type="password"
+          autocomplete="current-password">
+      </label>
+
+      <div
+        id="loginError"
+        class="error">
+      </div>
+
+      <button
+        class="primary"
+        id="loginButton">
+        SE CONNECTER
+      </button>
+
+    </div>
+
+
+    <div
+      id="administration"
+      style="display:none;">
+
+      <p>
+        Connexion administrateur réussie.
+      </p>
+
+      <button
+        class="primary"
+        id="printButton">
+        IMPRIMER / ENREGISTRER EN PDF
+      </button>
+
+      <button
+        class="secondary"
+        id="logoutButton">
+        DÉCONNEXION
+      </button>
+
+      <div id="registre"></div>
+
+    </div>
+
+  </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="admin.js"></script>
+
+</body>
+</html>
