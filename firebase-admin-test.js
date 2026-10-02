@@ -73,8 +73,10 @@ document
         .value;
 
     if (!email || !password) {
+
       loginError.textContent =
         "Veuillez entrer votre courriel et votre mot de passe.";
+
       return;
     }
 
@@ -86,13 +88,19 @@ document
         password
       );
 
- } catch (error) {
+    } catch (error) {
 
-  console.error("ERREUR FIREBASE :", error);
+      console.error(
+        "ERREUR FIREBASE :",
+        error
+      );
 
-  loginError.textContent =
-    "Erreur : " + error.code + " — " + error.message;
-}
+      loginError.textContent =
+        "Erreur : " +
+        error.code +
+        " — " +
+        error.message;
+    }
   });
 
 
@@ -142,17 +150,29 @@ async function chargerRegistre() {
 
   try {
 
+    // ------------------------------------------
+    // CONSENTEMENTS
+    // ------------------------------------------
+
     const q = query(
       collection(db, "consentements"),
       orderBy("date_signature", "desc")
     );
 
-    const resultat = await getDocs(q);
+    const resultat =
+      await getDocs(q);
+
+
+    // ------------------------------------------
+    // EN-TÊTE DU REGISTRE
+    // ------------------------------------------
 
     let html = `
       <hr>
 
-      <h2>Registre des consentements</h2>
+      <h2>
+        Registre des consentements
+      </h2>
 
       <p>
         Nombre de signatures :
@@ -160,13 +180,19 @@ async function chargerRegistre() {
       </p>
     `;
 
+
+    // ------------------------------------------
+    // INSCRIPTIONS
+    // ------------------------------------------
+
     let numero = 0;
 
     resultat.forEach(document => {
 
       numero++;
 
-      const consentement = document.data();
+      const consentement =
+        document.data();
 
       let dateFormatee = "";
 
@@ -181,6 +207,7 @@ async function chargerRegistre() {
             .toLocaleString("fr-CA");
       }
 
+
       html += `
         <section class="registre-entry">
 
@@ -190,20 +217,32 @@ async function chargerRegistre() {
             ${echapper(consentement.nom)}
           </h2>
 
+
           <p>
-            <strong>Date de signature :</strong>
+            <strong>
+              Date de signature :
+            </strong>
+
             ${echapper(dateFormatee)}
           </p>
 
+
           <p>
-            <strong>Version du formulaire :</strong>
+            <strong>
+              Version du formulaire :
+            </strong>
+
             ${echapper(
               consentement.version_formulaire
             )}
           </p>
 
+
           <p>
-            <strong>Règles acceptées :</strong>
+            <strong>
+              Règles acceptées :
+            </strong>
+
             ${
               consentement.regles_acceptees
                 ? "Oui"
@@ -211,8 +250,12 @@ async function chargerRegistre() {
             }
           </p>
 
+
           <p>
-            <strong>Risques reconnus :</strong>
+            <strong>
+              Risques reconnus :
+            </strong>
+
             ${
               consentement.risques_reconnus
                 ? "Oui"
@@ -220,43 +263,60 @@ async function chargerRegistre() {
             }
           </p>
 
+
           ${
             consentement.courriel
               ? `
                 <p>
-                  <strong>Courriel :</strong>
-                  ${echapper(consentement.courriel)}
+                  <strong>
+                    Courriel :
+                  </strong>
+
+                  ${echapper(
+                    consentement.courriel
+                  )}
                 </p>
               `
               : ""
           }
+
 
           ${
             consentement.telephone
               ? `
                 <p>
-                  <strong>Téléphone :</strong>
-                  ${echapper(consentement.telephone)}
+                  <strong>
+                    Téléphone :
+                  </strong>
+
+                  ${echapper(
+                    consentement.telephone
+                  )}
                 </p>
               `
               : ""
           }
 
-          <p><strong>Signature :</strong></p>
+
+          <p>
+            <strong>Signature :</strong>
+          </p>
+
 
           <img
             src="${consentement.signature}"
             alt="Signature"
             style="
-              display:block;
-              max-width:400px;
-              width:100%;
-              height:auto;
-              border:1px solid #ccc;
-              background:white;
-              margin-bottom:25px;
+              display: block;
+              max-width: 400px;
+              width: 100%;
+              height: auto;
+              border: 1px solid #ccc;
+              background: white;
+              margin-bottom: 25px;
             "
           >
+
 
           <hr>
 
@@ -264,104 +324,85 @@ async function chargerRegistre() {
       `;
     });
 
+
     // ==========================================
-// ANNEXE — VERSION DU FORMULAIRE
-// ==========================================
+    // ANNEXE — VERSIONS DU FORMULAIRE
+    // ==========================================
 
-const versionsSnapshot =
-  await getDocs(collection(db, "versions_formulaire"));
-
-if (!versionsSnapshot.empty) {
-
-  html += `
-    <section class="formulaire-annexe">
-
-      <hr>
-
-      <h1>
-        Annexe — Versions du formulaire
-      </h1>
-  `;
-
-  versionsSnapshot.forEach(documentVersion => {
-
-    const version = documentVersion.data();
-
-    html += `
-      <h2>
-        Version ${echapper(version.version)}
-      </h2>
-
-      <h3>
-        ${echapper(version.titre)}
-      </h3>
-
-      <div style="
-        white-space:pre-wrap;
-        line-height:1.5;
-      ">
-        ${echapper(version.contenu)}
-      </div>
-
-      <hr>
-    `;
-  });
-
-  html += `</section>`;
-}
+    const versionsSnapshot =
+      await getDocs(
+        collection(
+          db,
+          "versions_formulaire"
+        )
+      );
 
 
-// ==========================================
-// ANNEXE — VERSION DU FORMULAIRE
-// ==========================================
+    if (!versionsSnapshot.empty) {
 
-const versionsSnapshot =
-  await getDocs(collection(db, "versions_formulaire"));
+      html += `
+        <section class="formulaire-annexe">
 
-if (!versionsSnapshot.empty) {
+          <hr>
 
-  html += `
-    <section class="formulaire-annexe">
+          <h1>
+            Annexe — Versions du formulaire
+          </h1>
+      `;
 
-      <hr>
 
-      <h1>
-        Annexe — Versions du formulaire
-      </h1>
-  `;
+      versionsSnapshot.forEach(
+        documentVersion => {
 
-  versionsSnapshot.forEach(documentVersion => {
+          const version =
+            documentVersion.data();
 
-    const version = documentVersion.data();
 
-    html += `
-      <h2>
-        Version ${echapper(version.version)}
-      </h2>
+          html += `
+            <h2>
+              Version
+              ${echapper(version.version)}
+            </h2>
 
-      <h3>
-        ${echapper(version.titre)}
-      </h3>
 
-      <div style="
-        white-space:pre-wrap;
-        line-height:1.5;
-      ">
-        ${echapper(version.contenu)}
-      </div>
+            <h3>
+              ${echapper(version.titre)}
+            </h3>
 
-      <hr>
-    `;
-  });
 
-  html += `</section>`;
-}
+            <div
+              style="
+                white-space: pre-wrap;
+                line-height: 1.5;
+              "
+            >${echapper(version.contenu)}</div>
 
-registre.innerHTML = html;
+
+            <hr>
+          `;
+        }
+      );
+
+
+      html += `
+        </section>
+      `;
+    }
+
+
+    // ==========================================
+    // AFFICHER LE REGISTRE COMPLET
+    // ==========================================
+
+    registre.innerHTML = html;
+
 
   } catch (error) {
 
-    console.error("Erreur Firestore :", error);
+    console.error(
+      "Erreur Firestore :",
+      error
+    );
 
     registre.innerHTML = `
       <p class="error">
