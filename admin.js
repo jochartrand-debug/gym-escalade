@@ -1,297 +1,445 @@
-const SUPABASE_URL = "https://kisycpyatanclcaytnav.supabase.co";
-const SUPABASE_KEY = "sb_publishable_mvGAnjexhythAXvbL9PoLg_BzJHwSyK";
+import { initializeApp } from
+  "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
 
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from
+  "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
-const connexion = document.getElementById("connexion");
-const administration = document.getElementById("administration");
-const loginError = document.getElementById("loginError");
-const registre = document.getElementById("registre");
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  orderBy
+} from
+  "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
 
-// --------------------
+// ==========================================
+// CONFIGURATION FIREBASE
+// ==========================================
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDLrN8qLOk7ntM6WMEBgaYNuno7494Rvco",
+  authDomain: "la-grange-escalade.firebaseapp.com",
+  projectId: "la-grange-escalade",
+  storageBucket: "la-grange-escalade.firebasestorage.app",
+  messagingSenderId: "374749925333",
+  appId: "1:374749925333:web:4f5fe99c7e88a2b396f75c"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
+
+
+// ==========================================
+// ÉLÉMENTS DE LA PAGE
+// ==========================================
+
+const connexion =
+  document.getElementById("connexion");
+
+const administration =
+  document.getElementById("administration");
+
+const loginError =
+  document.getElementById("loginError");
+
+const registre =
+  document.getElementById("registre");
+
+
+// ==========================================
 // CONNEXION
-// --------------------
+// ==========================================
 
-document.getElementById("loginButton").addEventListener(
-  "click",
-  async () => {
+document
+  .getElementById("loginButton")
+  .addEventListener("click", async () => {
 
     loginError.textContent = "";
 
     const email =
-      document.getElementById("adminEmail").value.trim();
+      document.getElementById("adminEmail")
+        .value.trim();
 
     const password =
-      document.getElementById("adminPassword").value;
+      document.getElementById("adminPassword")
+        .value;
 
     if (!email || !password) {
+
       loginError.textContent =
         "Veuillez entrer votre courriel et votre mot de passe.";
+
       return;
     }
 
-    const { error } =
-      await db.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
+    try {
 
-    if (error) {
-      console.error(error);
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+    } catch (error) {
+
+      console.error(
+        "ERREUR FIREBASE :",
+        error
+      );
 
       loginError.textContent =
-        "Connexion impossible. Vérifiez votre courriel et votre mot de passe.";
-
-      return;
+        "Erreur : " +
+        error.code +
+        " — " +
+        error.message;
     }
-
-    await afficherAdministration();
-  }
-);
+  });
 
 
-// --------------------
+// ==========================================
 // DÉCONNEXION
-// --------------------
+// ==========================================
 
-document.getElementById("logoutButton").addEventListener(
-  "click",
-  async () => {
+document
+  .getElementById("logoutButton")
+  .addEventListener("click", async () => {
 
-    await db.auth.signOut();
+    await signOut(auth);
+  });
+
+
+// ==========================================
+// ÉTAT DE CONNEXION
+// ==========================================
+
+onAuthStateChanged(auth, async user => {
+
+  if (user) {
+
+    connexion.style.display = "none";
+    administration.style.display = "block";
+
+    registre.innerHTML =
+      "<p>Chargement du registre...</p>";
+
+    await chargerRegistre();
+
+  } else {
 
     administration.style.display = "none";
     connexion.style.display = "block";
 
     registre.innerHTML = "";
   }
-);
+});
 
 
-// --------------------
-// AFFICHER ADMIN
-// --------------------
-
-async function afficherAdministration() {
-
-  connexion.style.display = "none";
-  administration.style.display = "block";
-
-  registre.innerHTML =
-    "<p>Chargement du registre...</p>";
-
-  await chargerRegistre();
-}
-
-
-// --------------------
-// CHARGER LES DONNÉES
-// --------------------
+// ==========================================
+// CHARGER LE REGISTRE
+// ==========================================
 
 async function chargerRegistre() {
 
-  const { data: participants, error: erreurParticipants } =
-    await db
-      .from("participants")
-      .select("*");
+  try {
 
-  const { data: consentements, error: erreurConsentements } =
-    await db
-      .from("consentements")
-      .select("*")
-      .order("date_signature", { ascending: false });
+    // ------------------------------------------
+    // CONSENTEMENTS
+    // ------------------------------------------
 
-  const { data: versions, error: erreurVersions } =
-    await db
-      .from("versions_formulaire")
-      .select("*");
-
-  if (
-    erreurParticipants ||
-    erreurConsentements ||
-    erreurVersions
-  ) {
-
-    console.error(
-      erreurParticipants,
-      erreurConsentements,
-      erreurVersions
+    const q = query(
+      collection(db, "consentements"),
+      orderBy("date_signature", "desc")
     );
 
-    registre.innerHTML =
-      "<p class='error'>Impossible de charger le registre.</p>";
-
-    return;
-  }
+    const resultat =
+      await getDocs(q);
 
 
-  // --------------------
-  // ASSOCIER LES DONNÉES
-  // --------------------
+    // ------------------------------------------
+    // EN-TÊTE DU REGISTRE
+    // ------------------------------------------
 
-  const participantsParId = {};
+    let html = `
+      <hr>
 
-  participants.forEach(participant => {
-    participantsParId[participant.id] = participant;
-  });
-
-  const versionsParNumero = {};
-
-  versions.forEach(version => {
-    versionsParNumero[version.version] = version;
-  });
-
-
-  // --------------------
-  // CONSTRUIRE LE REGISTRE
-  // --------------------
-
-  let html = `
-    <hr>
-
-    <h2>Registre des consentements</h2>
-
-    <p>
-      Nombre de signatures :
-      <strong>${consentements.length}</strong>
-    </p>
-  `;
-
-
-  consentements.forEach((consentement, index) => {
-
-    const participant =
-      participantsParId[consentement.participant_id];
-
-    if (!participant) return;
-
-    const date =
-      new Date(consentement.date_signature);
-
-    const dateFormatee =
-      date.toLocaleString("fr-CA");
-
-    html += `
-      <section class="registre-entry">
-
-        <h2>
-          ${index + 1}.
-          ${echapper(participant.prenom)}
-          ${echapper(participant.nom)}
-        </h2>
-
-        <p>
-          <strong>Date de signature :</strong>
-          ${echapper(dateFormatee)}
-        </p>
-
-        <p>
-          <strong>Version du formulaire :</strong>
-          ${echapper(consentement.version_formulaire)}
-        </p>
-
-        <p>
-          <strong>Règles acceptées :</strong>
-          ${consentement.regles_acceptees ? "Oui" : "Non"}
-        </p>
-
-        <p>
-          <strong>Risques reconnus :</strong>
-          ${consentement.risques_reconnus ? "Oui" : "Non"}
-        </p>
-
-        ${
-          participant.courriel
-            ? `<p><strong>Courriel :</strong>
-               ${echapper(participant.courriel)}</p>`
-            : ""
-        }
-
-        ${
-          participant.telephone
-            ? `<p><strong>Téléphone :</strong>
-               ${echapper(participant.telephone)}</p>`
-            : ""
-        }
-
-        <p><strong>Signature :</strong></p>
-
-        <img
-          src="${consentement.signature}"
-          alt="Signature de ${echapper(participant.prenom)} ${echapper(participant.nom)}"
-          style="
-            max-width:400px;
-            width:100%;
-            height:auto;
-            border:1px solid #ccc;
-            background:white;
-          ">
-
-        <hr>
-
-      </section>
-    `;
-  });
-
-
-  // --------------------
-  // ANNEXE FORMULAIRE
-  // --------------------
-
-  html += `
-    <section class="formulaire-annexe">
-
-      <h1>Annexe — Versions du formulaire</h1>
-  `;
-
-  versions.forEach(version => {
-
-    html += `
       <h2>
-        Version ${echapper(version.version)}
+        Registre des consentements
       </h2>
 
-      <h3>
-        ${echapper(version.titre)}
-      </h3>
-
-      <div style="white-space:pre-wrap;">
-        ${echapper(version.contenu)}
-      </div>
-
-      <hr>
+      <p>
+        Nombre de signatures :
+        <strong>${resultat.size}</strong>
+      </p>
     `;
-  });
-
-  html += "</section>";
-
-  registre.innerHTML = html;
-}
 
 
-// --------------------
-// IMPRESSION
-// --------------------
+    // ------------------------------------------
+    // INSCRIPTIONS
+    // ------------------------------------------
 
-document.getElementById("printButton").addEventListener(
-  "click",
-  () => {
-    window.print();
-  }
+    let numero = 0;
+
+    resultat.forEach(document => {
+
+      numero++;
+
+      const consentement =
+        document.data();
+
+      let dateFormatee = "";
+
+      if (
+        consentement.date_signature &&
+        consentement.date_signature.toDate
+      ) {
+
+        dateFormatee =
+          consentement.date_signature
+            .toDate()
+            .toLocaleString("fr-CA");
+      }
+
+
+      html += `
+        <section class="registre-entry">
+
+          <h2>
+            ${numero}.
+            ${echapper(consentement.prenom)}
+            ${echapper(consentement.nom)}
+          </h2>
+
+
+          <p>
+            <strong>
+              Date de signature :
+            </strong>
+
+            ${echapper(dateFormatee)}
+          </p>
+
+
+          <p>
+            <strong>
+              Version du formulaire :
+            </strong>
+
+            ${echapper(
+              consentement.version_formulaire
+            )}
+          </p>
+
+
+          <p>
+            <strong>
+              Règles acceptées :
+            </strong>
+
+            ${
+              consentement.regles_acceptees
+                ? "Oui"
+                : "Non"
+            }
+          </p>
+
+
+          <p>
+            <strong>
+              Risques reconnus :
+            </strong>
+
+            ${
+              consentement.risques_reconnus
+                ? "Oui"
+                : "Non"
+            }
+          </p>
+
+
+          ${
+            consentement.courriel
+              ? `
+                <p>
+                  <strong>
+                    Courriel :
+                  </strong>
+
+                  ${echapper(
+                    consentement.courriel
+                  )}
+                </p>
+              `
+              : ""
+          }
+
+
+          ${
+            consentement.telephone
+              ? `
+                <p>
+                  <strong>
+                    Téléphone :
+                  </strong>
+
+                  ${echapper(
+                    consentement.telephone
+                  )}
+                </p>
+              `
+              : ""
+          }
+
+
+          <p>
+            <strong>Signature :</strong>
+          </p>
+
+
+          <img
+            src="${consentement.signature}"
+            alt="Signature"
+            style="
+              display: block;
+              max-width: 400px;
+              width: 100%;
+              height: auto;
+              border: 1px solid #ccc;
+              background: white;
+              margin-bottom: 25px;
+            "
+          >
+
+
+          <hr>
+
+        </section>
+      `;
+    });
+
+
+    // ==========================================
+    // ANNEXE — VERSIONS DU FORMULAIRE
+    // ==========================================
+
+    const versionsSnapshot =
+      await getDocs(
+        collection(
+          db,
+          "version_formulaire"
+        )
+      );
+
+    console.log(
+  "Versions trouvées :",
+  versionsSnapshot.size
 );
 
 
-// --------------------
-// PROTECTION HTML
-// --------------------
+    if (!versionsSnapshot.empty) {
+
+      html += `
+        <section class="formulaire-annexe">
+
+          <hr>
+
+          <h1>
+            Annexe — Versions du formulaire
+          </h1>
+      `;
+
+
+      versionsSnapshot.forEach(
+        documentVersion => {
+
+          const version =
+            documentVersion.data();
+
+
+          html += `
+            <h2>
+              Version
+              ${echapper(version.version)}
+            </h2>
+
+
+            <h3>
+              ${echapper(version.titre)}
+            </h3>
+
+
+            <div
+              style="
+                white-space: pre-wrap;
+                line-height: 1.5;
+              "
+            >${echapper(version.contenu)}</div>
+
+
+            <hr>
+          `;
+        }
+      );
+
+
+      html += `
+        </section>
+      `;
+    }
+
+
+    // ==========================================
+    // AFFICHER LE REGISTRE COMPLET
+    // ==========================================
+
+    registre.innerHTML = html;
+
+
+  } catch (error) {
+
+    console.error(
+      "Erreur Firestore :",
+      error
+    );
+
+    registre.innerHTML = `
+      <p class="error">
+        Impossible de charger le registre.
+      </p>
+    `;
+  }
+}
+
+
+// ==========================================
+// IMPRESSION
+// ==========================================
+
+document
+  .getElementById("printButton")
+  .addEventListener("click", () => {
+
+    window.print();
+  });
+
+
+// ==========================================
+// PROTECTION DU HTML
+// ==========================================
 
 function echapper(valeur) {
 
-  if (valeur === null || valeur === undefined) {
+  if (
+    valeur === null ||
+    valeur === undefined
+  ) {
     return "";
   }
 
@@ -302,20 +450,3 @@ function echapper(valeur) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
-
-
-// --------------------
-// SESSION EXISTANTE
-// --------------------
-
-(async () => {
-
-  const {
-    data: { session }
-  } = await db.auth.getSession();
-
-  if (session) {
-    await afficherAdministration();
-  }
-
-})();
