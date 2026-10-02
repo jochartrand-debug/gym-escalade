@@ -333,7 +333,7 @@ async function chargerRegistre() {
       await getDocs(
         collection(
           db,
-          "versions_formulaire"
+          "version_formulaire"
         )
       );
 
