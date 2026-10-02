@@ -264,6 +264,52 @@ async function chargerRegistre() {
       `;
     });
 
+    // ==========================================
+// ANNEXE — VERSION DU FORMULAIRE
+// ==========================================
+
+const versionsSnapshot =
+  await getDocs(collection(db, "versions_formulaire"));
+
+if (!versionsSnapshot.empty) {
+
+  html += `
+    <section class="formulaire-annexe">
+
+      <hr>
+
+      <h1>
+        Annexe — Versions du formulaire
+      </h1>
+  `;
+
+  versionsSnapshot.forEach(documentVersion => {
+
+    const version = documentVersion.data();
+
+    html += `
+      <h2>
+        Version ${echapper(version.version)}
+      </h2>
+
+      <h3>
+        ${echapper(version.titre)}
+      </h3>
+
+      <div style="
+        white-space:pre-wrap;
+        line-height:1.5;
+      ">
+        ${echapper(version.contenu)}
+      </div>
+
+      <hr>
+    `;
+  });
+
+  html += `</section>`;
+}
+
     registre.innerHTML = html;
 
   } catch (error) {
