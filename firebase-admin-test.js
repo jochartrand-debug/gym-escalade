@@ -86,13 +86,13 @@ document
         password
       );
 
-    } catch (error) {
+ } catch (error) {
 
-      console.error(error);
+  console.error("ERREUR FIREBASE :", error);
 
-      loginError.textContent =
-        "Connexion impossible. Vérifiez votre courriel et votre mot de passe.";
-    }
+  loginError.textContent =
+    "Erreur : " + error.code + " — " + error.message;
+}
   });
 
 
