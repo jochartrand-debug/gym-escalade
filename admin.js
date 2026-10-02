@@ -337,13 +337,7 @@ async function chargerRegistre() {
         )
       );
 
-    console.log(
-  "Versions trouvées :",
-  versionsSnapshot.size
-);
-
-
-    if (!versionsSnapshot.empty) {
+        if (!versionsSnapshot.empty) {
 
       html += `
         <section class="formulaire-annexe">
