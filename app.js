@@ -1,6 +1,36 @@
-const SUPABASE_URL = "https://kisycpyatanclcaytnav.supabase.co";
-const SUPABASE_KEY = "sb_publishable_mvGAnjexhythAXvbL9PoLg_BzJHwSyK";
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+import { initializeApp } from
+  "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp
+} from
+  "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+
+// ==========================================
+// CONFIGURATION FIREBASE
+// ==========================================
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDLrN8qLOk7ntM6WMEBgaYNuno7494Rvco",
+  authDomain: "la-grange-escalade.firebaseapp.com",
+  projectId: "la-grange-escalade",
+  storageBucket: "la-grange-escalade.firebasestorage.app",
+  messagingSenderId: "374749925333",
+  appId: "1:374749925333:web:4f5fe99c7e88a2b396f75c"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+
+
+// ==========================================
+// FORMULAIRE
+// ==========================================
 
 const screens = [...document.querySelectorAll(".screen")];
 
@@ -12,7 +42,9 @@ let submitting = false;
 const canvas = document.getElementById("signaturePad");
 const ctx = canvas.getContext("2d");
 
+
 function showStep(n) {
+
   step = n;
 
   screens.forEach(screen => {
@@ -22,7 +54,8 @@ function showStep(n) {
     );
   });
 
-  document.getElementById("progressText").textContent = `${n} / 6`;
+  document.getElementById("progressText").textContent =
+    `${n} / 6`;
 
   if (n === 4) {
     resizeCanvas();
@@ -31,53 +64,86 @@ function showStep(n) {
   window.scrollTo(0, 0);
 }
 
+
 function clearErrors() {
+
   document.querySelectorAll(".error").forEach(element => {
     element.textContent = "";
   });
 }
 
+
 function validStep(n) {
+
   clearErrors();
 
   if (n === 2) {
-    const prenom = document.getElementById("prenom").value.trim();
-    const nom = document.getElementById("nom").value.trim();
+
+    const prenom =
+      document.getElementById("prenom").value.trim();
+
+    const nom =
+      document.getElementById("nom").value.trim();
 
     if (!prenom || !nom) {
+
       document.getElementById("identityError").textContent =
         "Veuillez remplir le prénom et le nom.";
+
       return false;
     }
   }
+
 
   if (n === 3) {
-    const regles = document.getElementById("regles").checked;
-    const risques = document.getElementById("risques").checked;
+
+    const regles =
+      document.getElementById("regles").checked;
+
+    const risques =
+      document.getElementById("risques").checked;
 
     if (!regles || !risques) {
+
       document.getElementById("rulesError").textContent =
         "Veuillez cocher les deux cases.";
+
       return false;
     }
   }
 
+
   if (n === 4 && !hasSignature) {
+
     document.getElementById("signatureError").textContent =
       "Veuillez signer avant de continuer.";
+
     return false;
   }
 
-  if (n === 5 && !document.getElementById("finalAccept").checked) {
+
+  if (
+    n === 5 &&
+    !document.getElementById("finalAccept").checked
+  ) {
+
     document.getElementById("finalError").textContent =
       "Veuillez confirmer votre inscription.";
+
     return false;
   }
+
 
   return true;
 }
 
+
+// ==========================================
+// NAVIGATION
+// ==========================================
+
 document.querySelectorAll("[data-next]").forEach(button => {
+
   button.addEventListener("click", async () => {
 
     if (!validStep(step)) return;
@@ -91,13 +157,21 @@ document.querySelectorAll("[data-next]").forEach(button => {
   });
 });
 
+
 document.querySelectorAll("[data-prev]").forEach(button => {
+
   button.addEventListener("click", () => {
     showStep(Math.max(1, step - 1));
   });
 });
 
+
+// ==========================================
+// SIGNATURE
+// ==========================================
+
 function resizeCanvas() {
+
   if (hasSignature) return;
 
   const rect = canvas.getBoundingClientRect();
@@ -106,13 +180,23 @@ function resizeCanvas() {
   canvas.width = rect.width * ratio;
   canvas.height = rect.height * ratio;
 
-  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  ctx.setTransform(
+    ratio,
+    0,
+    0,
+    ratio,
+    0,
+    0
+  );
+
   ctx.lineWidth = 2;
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
 }
 
+
 function pointerPosition(event) {
+
   const rect = canvas.getBoundingClientRect();
 
   return {
@@ -121,7 +205,9 @@ function pointerPosition(event) {
   };
 }
 
+
 canvas.addEventListener("pointerdown", event => {
+
   drawing = true;
 
   canvas.setPointerCapture(event.pointerId);
@@ -132,7 +218,9 @@ canvas.addEventListener("pointerdown", event => {
   ctx.moveTo(point.x, point.y);
 });
 
+
 canvas.addEventListener("pointermove", event => {
+
   if (!drawing) return;
 
   const point = pointerPosition(event);
@@ -143,24 +231,36 @@ canvas.addEventListener("pointermove", event => {
   hasSignature = true;
 });
 
+
 canvas.addEventListener("pointerup", () => {
   drawing = false;
 });
+
 
 canvas.addEventListener("pointercancel", () => {
   drawing = false;
 });
 
-function clearSignaturePad() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  hasSignature = false;
-  clearErrors();
-}
 
-document.getElementById("clearSignature").addEventListener(
-  "click",
-  clearSignaturePad
-);
+document
+  .getElementById("clearSignature")
+  .addEventListener("click", () => {
+
+    ctx.clearRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    hasSignature = false;
+    clearErrors();
+  });
+
+
+// ==========================================
+// ENREGISTREMENT FIRESTORE
+// ==========================================
 
 async function enregistrerInscription() {
 
@@ -181,40 +281,46 @@ async function enregistrerInscription() {
 
   try {
 
-    const signature = canvas.toDataURL("image/png");
+    const signature =
+      canvas.toDataURL("image/png");
 
-    const { data, error } = await db.rpc(
-      "enregistrer_inscription",
+    await addDoc(
+      collection(db, "consentements"),
       {
-        p_prenom:
+        prenom:
           document.getElementById("prenom").value.trim(),
 
-        p_nom:
+        nom:
           document.getElementById("nom").value.trim(),
 
-        p_courriel:
+        courriel:
           document.getElementById("courriel").value.trim(),
 
-        p_telephone:
+        telephone:
           document.getElementById("telephone").value.trim(),
 
-        p_version_formulaire: "1.0",
+        date_signature:
+          serverTimestamp(),
 
-        p_signature: signature
+        version_formulaire:
+          "1.0",
+
+        regles_acceptees:
+          true,
+
+        risques_reconnus:
+          true,
+
+        signature:
+          signature
       }
     );
-
-    if (error) {
-      throw error;
-    }
-
-    console.log("Inscription créée :", data);
 
     showStep(6);
 
   } catch (error) {
 
-    console.error(error);
+    console.error("Erreur Firebase :", error);
 
     document.getElementById("finalError").textContent =
       "L'inscription n'a pas pu être enregistrée. Veuillez réessayer.";
@@ -227,19 +333,39 @@ async function enregistrerInscription() {
   }
 }
 
-document.getElementById("newEntry").addEventListener("click", () => {
-  window.location.reload();
-});
 
-document.getElementById("closePage").addEventListener("click", () => {
-  document.body.innerHTML = `
-    <main class="app">
-      <div class="card success">
-        <div class="checkmark">✓</div>
-        <h1>Merci !</h1>
-        <p>Votre inscription à La Grange est terminée.</p>
-        <p>Vous pouvez maintenant fermer cette page.</p>
-      </div>
-    </main>
-  `;
-});
+// ==========================================
+// ÉCRAN FINAL
+// ==========================================
+
+document
+  .getElementById("newEntry")
+  .addEventListener("click", () => {
+    window.location.reload();
+  });
+
+
+document
+  .getElementById("closePage")
+  .addEventListener("click", () => {
+
+    document.body.innerHTML = `
+      <main class="app">
+        <div class="card success">
+
+          <div class="checkmark">✓</div>
+
+          <h1>Merci !</h1>
+
+          <p>
+            Votre inscription à La Grange est terminée.
+          </p>
+
+          <p>
+            Vous pouvez maintenant fermer cette page.
+          </p>
+
+        </div>
+      </main>
+    `;
+  });
