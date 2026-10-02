@@ -14,13 +14,14 @@ import {
 // CONFIGURATION FIREBASE
 // ==========================================
 
+
 const firebaseConfig = {
-  apiKey: "TON_API_KEY",
-  authDomain: "TON_AUTH_DOMAIN",
-  projectId: "TON_PROJECT_ID",
-  storageBucket: "TON_STORAGE_BUCKET",
-  messagingSenderId: "TON_MESSAGING_SENDER_ID",
-  appId: "TON_APP_ID"
+  apiKey: "AIzaSyDLrN8qLOk7ntM6WMEBgaYNuno7494Rvco",
+  authDomain: "la-grange-escalade.firebaseapp.com",
+  projectId: "la-grange-escalade",
+  storageBucket: "la-grange-escalade.firebasestorage.app",
+  messagingSenderId: "374749925333",
+  appId: "1:374749925333:web:4f5fe99c7e88a2b396f75c"
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
