@@ -310,9 +310,8 @@ if (!versionsSnapshot.empty) {
   html += `</section>`;
 }
 
-    registre.innerHTML = html;
 
-    // ==========================================
+// ==========================================
 // ANNEXE — VERSION DU FORMULAIRE
 // ==========================================
 
@@ -357,6 +356,8 @@ if (!versionsSnapshot.empty) {
 
   html += `</section>`;
 }
+
+registre.innerHTML = html;
 
   } catch (error) {
 
