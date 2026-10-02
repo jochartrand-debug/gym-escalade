@@ -337,6 +337,11 @@ async function chargerRegistre() {
         )
       );
 
+    console.log(
+  "Versions trouvées :",
+  versionsSnapshot.size
+);
+
 
     if (!versionsSnapshot.empty) {
 
